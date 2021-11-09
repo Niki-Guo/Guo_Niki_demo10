@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>My BCIT Project</title>
+    <meta name="comp1800 template" content="my bcit Hiking App project">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- Optional styles and scripts of your own -->
+    <link type="text/css" href="styles/my_style.css">
+
+    <!-- Bootstrap FirebaseUI CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Firebase 8 CDNs-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+
+    <!-- Link to the api keys for your firebase project -->
+    <script src="/scripts/firebaseAPI_TEAM99.js"></script>
+
+</head>
+
+<body>
+
+    <!-------------------------------------->
+    <!-- The following is HTML for layout -->
+    <!-------------------------------------->
+    <nav class="navbar navbar-expand-lg navbar-light bg-info">
+        <div class="container-fluid">
+            <a class="navbar-brand">Hiking App</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="login.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Navigate</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Saved</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="profile.html">Profile</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid bg-dark text-light p-5">
+        <div class="container bg-dark p-5">
+            <h1 class="display-4">Good morning, <span id="name-goes-here"></span></h1>
+            <hr>
+            <p>Quote of the day: <span id="quote-goes-here"></span></p>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <div class="card-group">
+
+            <div class="card">
+                <img src="./images/burnaby-lake.jpg" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title" id="BBY01">Hike name</h5>
+                    <a href="review.html" class="link-primary" onclick="setHikeData('BBY01')">Write a review</a>
+                    <br>
+                    <p class="card-text">This card has supporting text below as a natural lead-in to additional content.
+                    </p>
+                    <a href="#" class="btn btn-primary" style="float: right">Read more</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <img src="./images/mountSeymoure.jpg" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title" id="NV01">Hike name</h5>
+                    <a href="review.html" class="link-primary" onclick="setHikeData('NV01')">Write a review</a>
+                    <br>
+                    <p class="card-text">This card has supporting text below as a natural lead-in to additional content.
+                    </p>
+                    <a href="#" class="btn btn-primary" style="float: right">Read more</a>
+                </div>
+            </div>
+
+            <div class="card" style="width: 18rem;">
+                <img src="./images/buntzenLake.jpg" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title" id="AM01">Hike name</h5>
+                    <a href="review.html" class="link-primary" onclick="setHikeData('AM01')">Write a review</a>
+                    <br>
+                    <p class="card-text">This card has supporting text below as a natural lead-in to additional content.
+                    </p>
+                    <a href="#" class="btn btn-primary" style="float: right">Read more</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!--------------------------------------------------------------------->
+    <!-- JS files: Your own JavaScript functions included here    -->
+    <!--------------------------------------------------------------------->
+    <script>
+        function read_display_Quote() {
+            db.collection("quotes").doc(
+                    "Tuesday"
+                    ) //name of the collection and documents should matach excatly with what you have in Firestore
+                .onSnapshot(TuesdayDoc => { //
+                    //console.log("current document data: " + TuesdayDoc.data()); //.data() returns data object
+                    document.getElementById("quote-goes-here").innerHTML = TuesdayDoc.data()
+                        .quote; //using vanilla javascript
+                })
+        }
+        //read_display_Quote()
+
+        function insertName() {
+            firebase.auth().onAuthStateChanged(user => {
+                // Check if user is signed in:
+                if (user) {
+                    // Do something for the current logged-in user here: 
+                    //console.log(user.uid);
+                    //go to the correct user document by referencing to the user uid
+                    currentUser = db.collection("users").doc(user.uid)
+                    //get the document for current user.
+                    currentUser.get()
+                        .then(userDoc => {
+                            var user_Name = userDoc.data().name;
+                            //console.log(user_Name);
+                            //document.getElementById("username").innerText = n;                     //using javascript
+                            $("#name-goes-here").text(user_Name); //using jquery
+                        })
+                } else {
+                    // No user is signed in.
+                }
+            });
+        }
+        insertName();
+
+        function writeHikes() {
+            //define a variable for the collection you want to create in Firestore to populate data
+            var hikesRef = db.collection("Hikes");
+
+            hikesRef.add({
+                code: "BBY01",
+                name: "Burnaby Lake Park Trail", //replace with your own city?
+                city: "Burnaby",
+                province: "BC",
+                level: "easy",
+                length: "10 km",
+                length_time: "2h 33mm"
+            });
+            hikesRef.add({
+                code: "AM01",
+                name: "Buntzen Lake Trail Trail", //replace with your own city?
+                city: "Anmore",
+                province: "BC",
+                level: "moderate",
+                length: "10.5 km",
+                length_time: "3h 17mm"
+            });
+            hikesRef.add({
+                code: "NV01",
+                name: "Mount Seymoure Trail", //replace with your own city?
+                city: "North Vancouver",
+                province: "BC",
+                level: "hard",
+                length: "8.2 km",
+                length_time: "3h 20m"
+            });
+        }
+
+
+        function displayHikes() {
+            db.collection("Hikes").get()
+                .then(allHikes => {
+                    allHikes.forEach(doc => {
+                        var hikeName = doc.data().name; //gets the name field
+                        var hikeID = doc.data().code; //gets the unique ID field
+                        document.getElementById(hikeID).innerText = hikeName;
+                    })
+
+                })
+        }
+        //displayHikes();
+    </script>
+
+</body>
+
+</html>
